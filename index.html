@@ -207,6 +207,7 @@
   .r-title { font-family: var(--font-serif); font-size: clamp(23px, 5vw, 30px); line-height: 1.18; margin: 0 0 12px; letter-spacing: -.01em; text-wrap: balance; }
   .r-body { color: var(--ink-soft); font-size: 15.5px; margin: 0 0 20px; }
   .r-body strong { color: var(--ink); font-weight: 650; }
+  .r-note { font-size: 13px; color: var(--ink-faint); margin: -8px 0 20px; }
 
   .subhead { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 10px; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; }
@@ -247,6 +248,7 @@
   .chk input { width:auto; margin:2px 0 0; accent-color:var(--brand); }
   .lf-err { color:#c0392b; font-size:12.5px; margin:10px 0 0; }
   .lf-privacy { font-size:11.5px; color:var(--ink-faint); margin:12px 0 0; line-height:1.45; }
+  .lf-privacy a { color: var(--brand); }
   .lf-done { display:flex; gap:12px; align-items:flex-start; }
   .lf-done svg { width:22px; height:22px; color:var(--brand); flex:0 0 auto; margin-top:2px; }
   .lf-recap { margin-top:10px; padding:10px 12px; background:var(--surface); border:1px solid var(--line); border-radius:9px; font-size:12.5px; color:var(--ink-soft); line-height:1.55; }
@@ -298,6 +300,7 @@
   var body = document.getElementById('body');
   var progressEl = document.getElementById('progress');
   var VDH = "https://vanderhamecologie.nl";
+  var WEB3FORMS_KEY = ""; // Web3Forms access key invullen om echt te verzenden; leeg = testmodus (verzendt niet)
 
   // ---- datumlogica: bepaalt in welk veldseizoen het onderzoek kan vallen ----
   var MND = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
@@ -328,7 +331,7 @@
     if (inBroedseizoen(today)) {
       return 'Ingevuld op '+fmtDate(today)+'. <b>Let op: het is nu broedseizoen</b> (globaal 15 maart tot 15 juli). Wacht bij voorkeur tot na half juli, of laat vooraf op nesten controleren.';
     }
-    return 'Ingevuld op '+fmtDate(today)+'. Je zit nu <b>buiten het broedseizoen</b>, dus je kunt aan de slag. Blijf wel alert op de zorgplicht: stuit je op een nest, holte of dier, stop dan en laat het checken.';
+    return 'Ingevuld op '+fmtDate(today)+'. Je zit nu <b>buiten het broedseizoen</b>, dus meestal staat er weinig in de weg. Zekerheid voor jouw specifieke situatie geeft een korte check; blijf sowieso alert op de zorgplicht: stuit je op een nest, holte of dier, stop dan en laat het checken.';
   }
 
   // ---- icons ----
@@ -610,6 +613,7 @@
     setProgress(4);
     var r = result();
     var adresPrefill = ((state.huisnr ? state.huisnr+' ' : '') + (state.postcode||'')).trim();
+    var quickscanNote = (r.level === 'advise') ? '<p class="r-note">Dit is een eerste indruk op basis van je antwoorden. De quickscan vertelt je wat er op jóuw adres echt speelt en of je plan door kan.</p>' : '';
     var badgeText = r.level==='advise' ? 'Begin met een quickscan' : (r.level==='calm' ? 'Geen onderzoek, wel zorgplicht' : 'Even laten checken');
     var badgeIcon = r.level==='advise' ? I.advise : (r.level==='calm' ? I.calm : I.check);
 
@@ -623,6 +627,7 @@
         '<span class="badge '+r.level+'">'+badgeIcon+badgeText+'</span>' +
         '<h2 class="r-title">'+r.title+'</h2>' +
         '<p class="r-body">'+r.body+'</p>' +
+        quickscanNote +
         chipsBlock +
         timingBlock +
         smpBlock +
@@ -642,7 +647,7 @@
             '</div>' +
             '<button class="btn-primary" id="lf-send">Versturen '+I.arrowR+'</button>' +
             '<p class="lf-err" id="lf-err" hidden>Vul een geldig e-mailadres in.</p>' +
-            '<p class="lf-privacy">We gebruiken je gegevens alleen om je advies te mailen en, als je dat kiest, je offerteaanvraag te behandelen.</p>' +
+            '<p class="lf-privacy">We gebruiken je gegevens alleen om je advies te mailen en, als je dat kiest, je offerteaanvraag te behandelen. Zie de <a href="privacy.html">privacyverklaring</a>.</p>' +
           '</div>' +
         '</div>' +
         '<div class="nav"><button class="back" id="back">'+I.arrowL+' Vorige vraag</button></div>' +
@@ -663,23 +668,49 @@
     if (lfSend) lfSend.onclick = function(){
       var email = (document.getElementById('lf-email').value || '').trim();
       var err = document.getElementById('lf-err');
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.hidden = false; document.getElementById('lf-email').focus(); return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.hidden = false; err.textContent = 'Vul een geldig e-mailadres in.'; document.getElementById('lf-email').focus(); return; }
       err.hidden = true;
       var naam = (document.getElementById('lf-naam').value || '').trim();
       var self = document.getElementById('lf-self').checked;
       var vdhe = document.getElementById('lf-vdhe').checked;
+      var tel = (document.getElementById('lf-tel').value || '').trim();
+      var opm = (document.getElementById('lf-opm').value || '').trim();
+      var adres = (document.getElementById('lf-adres').value || adresPrefill || '').trim();
       var ctx = ctxLabelFor();
-      var recap = '<b>Jouw antwoorden</b><br>Plan: '+labelFor(activities, state.activity)+(ctx?'<br>Toelichting: '+ctx:'')+(adresPrefill?'<br>Locatie: '+adresPrefill:'')+'<br>Advies: '+r.title;
-      var parts = [];
-      if (self) parts.push('je advies is verstuurd naar '+email);
-      if (vdhe) parts.push('je aanvraag is doorgestuurd naar Van Der Ham Ecologie');
-      var msg = 'Bedankt'+(naam?', '+naam:'')+'! '+(parts.length ? (parts.join(' en ').charAt(0).toUpperCase()+parts.join(' en ').slice(1)+'.') : 'Je antwoorden zijn opgeslagen.');
-      document.getElementById('lf-wrap').innerHTML =
-        '<div class="lf-done">'+I.calm+'<div>' +
-          '<p class="ct">'+msg+'</p>' +
-          '<p class="cs">Let op: dit is een prototype, er wordt nog niets echt verzonden. Bij livegang mailt het formulier dit automatisch.</p>' +
-          '<div class="lf-recap">'+recap+'</div>' +
-        '</div></div>';
+      var recap = '<b>Jouw antwoorden</b><br>Plan: '+labelFor(activities, state.activity)+(ctx?'<br>Toelichting: '+ctx:'')+(adres?'<br>Locatie: '+adres:'')+'<br>Advies: '+r.title;
+      function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+      function finish(note){
+        var parts = [];
+        if (self) parts.push('je advies is verstuurd naar '+email);
+        if (vdhe) parts.push('je aanvraag is doorgestuurd naar Van Der Ham Ecologie');
+        var msg = 'Bedankt'+(naam?', '+naam:'')+'! '+(parts.length ? (cap(parts.join(' en '))+'.') : 'We hebben je antwoorden ontvangen.');
+        document.getElementById('lf-wrap').innerHTML =
+          '<div class="lf-done">'+I.calm+'<div>' +
+            '<p class="ct">'+msg+'</p>' +
+            (note ? '<p class="cs">'+note+'</p>' : '') +
+            '<div class="lf-recap">'+recap+'</div>' +
+          '</div></div>';
+      }
+      if (!WEB3FORMS_KEY) {
+        finish('Testmodus: er wordt nog niets echt verzonden. Zodra de verzendsleutel is ingesteld, mailt het formulier dit automatisch.');
+        return;
+      }
+      var oldTxt = lfSend.innerHTML; lfSend.disabled = true; lfSend.textContent = 'Versturen...';
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: 'HIEON-aanvraag: ' + labelFor(activities, state.activity),
+          from_name: 'HIEON (hieon.nl)',
+          email: email, naam: naam, telefoon: tel, adres: adres, opmerking: opm,
+          plan: labelFor(activities, state.activity), toelichting: ctx || '-', advies: r.title,
+          wil_offerte: vdhe ? 'ja' : 'nee', wil_kopie: self ? 'ja' : 'nee'
+        })
+      }).then(function(res){ return res.json(); }).then(function(data){
+        if (data && data.success) { finish(''); }
+        else { lfSend.disabled = false; lfSend.innerHTML = oldTxt; err.hidden = false; err.textContent = 'Versturen lukte niet. Probeer het nog eens of mail info@vanderhamecologie.nl.'; }
+      }).catch(function(){ lfSend.disabled = false; lfSend.innerHTML = oldTxt; err.hidden = false; err.textContent = 'Versturen lukte niet. Probeer het nog eens of mail info@vanderhamecologie.nl.'; });
     };
   }
 
