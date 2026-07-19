@@ -634,20 +634,16 @@
         permitBlock +
         '<div class="cta-box" id="lf-wrap">' +
           '<p class="ct">'+r.cta.title+'</p>' +
-          '<p class="cs">'+r.cta.sub+' Vul je gegevens in: je krijgt je antwoorden en advies per e-mail, en je kunt meteen een vrijblijvende offerte aanvragen.</p>' +
+          '<p class="cs">'+r.cta.sub+' Vul je gegevens in, dan neemt Van Der Ham Ecologie contact met je op.</p>' +
           '<div class="leadform">' +
             '<label>Naam<input type="text" id="lf-naam" autocomplete="name"></label>' +
             '<label>E-mailadres<input type="email" id="lf-email" autocomplete="email" placeholder="jij@voorbeeld.nl"></label>' +
             '<label>Adres of postcode + plaats<input type="text" id="lf-adres" autocomplete="street-address" value="'+adresPrefill+'"></label>' +
             '<label>Telefoon (optioneel)<input type="tel" id="lf-tel" autocomplete="tel"></label>' +
             '<label>Opmerking (optioneel)<textarea id="lf-opm"></textarea></label>' +
-            '<div class="lf-opts">' +
-              '<label class="chk"><input type="checkbox" id="lf-self" checked> Stuur mij mijn antwoorden en advies per e-mail</label>' +
-              '<label class="chk"><input type="checkbox" id="lf-vdhe" checked> Vraag meteen een vrijblijvende offerte aan bij Van Der Ham Ecologie</label>' +
-            '</div>' +
-            '<button class="btn-primary" id="lf-send">Versturen '+I.arrowR+'</button>' +
+            '<button class="btn-primary" id="lf-send">Verstuur mijn aanvraag '+I.arrowR+'</button>' +
             '<p class="lf-err" id="lf-err" hidden>Vul een geldig e-mailadres in.</p>' +
-            '<p class="lf-privacy">We gebruiken je gegevens alleen om je advies te mailen en, als je dat kiest, je offerteaanvraag te behandelen. Zie de <a href="privacy.html">privacyverklaring</a>.</p>' +
+            '<p class="lf-privacy">We gebruiken je gegevens alleen om je aanvraag te behandelen en contact met je op te nemen. Zie de <a href="privacy.html">privacyverklaring</a>.</p>' +
           '</div>' +
         '</div>' +
         '<div class="nav"><button class="back" id="back">'+I.arrowL+' Vorige vraag</button></div>' +
@@ -671,19 +667,13 @@
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.hidden = false; err.textContent = 'Vul een geldig e-mailadres in.'; document.getElementById('lf-email').focus(); return; }
       err.hidden = true;
       var naam = (document.getElementById('lf-naam').value || '').trim();
-      var self = document.getElementById('lf-self').checked;
-      var vdhe = document.getElementById('lf-vdhe').checked;
       var tel = (document.getElementById('lf-tel').value || '').trim();
       var opm = (document.getElementById('lf-opm').value || '').trim();
       var adres = (document.getElementById('lf-adres').value || adresPrefill || '').trim();
       var ctx = ctxLabelFor();
       var recap = '<b>Jouw antwoorden</b><br>Plan: '+labelFor(activities, state.activity)+(ctx?'<br>Toelichting: '+ctx:'')+(adres?'<br>Locatie: '+adres:'')+'<br>Advies: '+r.title;
-      function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
       function finish(note){
-        var parts = [];
-        if (self) parts.push('je advies is verstuurd naar '+email);
-        if (vdhe) parts.push('je aanvraag is doorgestuurd naar Van Der Ham Ecologie');
-        var msg = 'Bedankt'+(naam?', '+naam:'')+'! '+(parts.length ? (cap(parts.join(' en '))+'.') : 'We hebben je antwoorden ontvangen.');
+        var msg = 'Bedankt'+(naam?', '+naam:'')+'! Je aanvraag staat bij Van Der Ham Ecologie. We nemen zo snel mogelijk contact met je op.';
         document.getElementById('lf-wrap').innerHTML =
           '<div class="lf-done">'+I.calm+'<div>' +
             '<p class="ct">'+msg+'</p>' +
@@ -704,8 +694,7 @@
           subject: 'HIEON-aanvraag: ' + labelFor(activities, state.activity),
           from_name: 'HIEON (hieon.nl)',
           email: email, naam: naam, telefoon: tel, adres: adres, opmerking: opm,
-          plan: labelFor(activities, state.activity), toelichting: ctx || '-', advies: r.title,
-          wil_offerte: vdhe ? 'ja' : 'nee', wil_kopie: self ? 'ja' : 'nee'
+          plan: labelFor(activities, state.activity), toelichting: ctx || '-', advies: r.title
         })
       }).then(function(res){ return res.json(); }).then(function(data){
         if (data && data.success) { finish(''); }
