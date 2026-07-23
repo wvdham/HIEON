@@ -279,6 +279,13 @@
   .disclaimer svg { width: 15px; height: 15px; flex: 0 0 auto; margin-top: 2px; }
   .disclaimer a { color: var(--ink-soft); }
 
+  .site-foot { width:100%; max-width: var(--maxw); margin-top: 28px; padding: 20px 4px 0; border-top: 1px solid var(--line); }
+  .foot-links { display:flex; flex-wrap:wrap; gap: 8px 18px; margin-bottom: 12px; }
+  .foot-links a { font-size: 13.5px; color: var(--brand); text-decoration: none; font-weight: 550; }
+  .foot-links a:hover { text-decoration: underline; }
+  .foot-about { font-size: 12.5px; color: var(--ink-faint); line-height: 1.55; margin: 0; }
+  .foot-about a { color: var(--ink-soft); }
+
   /* transitions between screens */
   .screen { animation: fade .28s ease both; }
   @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -307,6 +314,16 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
     <span>HIEON geeft een eerste indicatie op basis van je antwoorden. Het is geen juridisch oordeel en vervangt geen quickscan. Bij twijfel geldt altijd: laat het even checken.</span>
   </p>
+
+  <footer class="site-foot">
+    <div class="foot-links">
+      <a href="isolatie-en-vleermuizen.html">Isolatie en vleermuizen</a>
+      <a href="boom-kappen.html">Mag ik een boom kappen?</a>
+      <a href="quickscan.html">Wat is een quickscan?</a>
+      <a href="privacy.html">Privacyverklaring</a>
+    </div>
+    <p class="foot-about">Achter HIEON zit <a href="https://vanderhamecologie.nl" target="_blank" rel="noopener">Van Der Ham Ecologie</a>, ecologisch adviesbureau uit Zeist. Wij voeren de quickscans en het vervolgonderzoek zelf uit. KVK 88425789.</p>
+  </footer>
 </div>
 
 <script>
@@ -357,6 +374,8 @@
     hedge: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V11M9 20v-7M13 20v-8M17 20v-6M19 20V9"/><path d="M4 20h16"/><path d="M6 8c0-1.6 1.3-3 3-3M12 7c0-2 1.5-3.5 3-3.5" opacity=".7"/></svg>',
     water: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8c2 0 2 1.5 4.5 1.5S11 8 13 8s2 1.5 4.5 1.5S21 8 21 8"/><path d="M3 13c2 0 2 1.5 4.5 1.5S11 13 13 13s2 1.5 4.5 1.5S21 13 21 13"/><path d="M3 18c2 0 2 1.5 4.5 1.5S11 18 13 18s2 1.5 4.5 1.5S21 18 21 18"/></svg>',
     other: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7"/><path d="M12 16.5v.01"/></svg>',
+    spade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v9"/><path d="M9.5 3h5"/><path d="M8 12h8l-1.3 5.2a3 3 0 0 1-5.4 0L8 12Z"/></svg>',
+    asbest: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 4l9 6.5"/><path d="M5 9.5V20h14V9.5"/><path d="M8 13h8M8 16.5h8" opacity=".6"/><path d="M12 3v1"/></svg>',
     bat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8c-1-2-3-3-4.5-2C7 4 5.5 4.5 5 6c-1.5-.5-2 .5-2 1.5C4 8 4.5 9 4 10.5c1.5 0 3 .5 4 2 .3-1 .8-1.5 1.5-1.5V8"/><path d="M12 8c1-2 3-3 4.5-2C17 4 18.5 4.5 19 6c1.5-.5 2 .5 2 1.5C20 8 19.5 9 20 10.5c-1.5 0-3 .5-4 2-.3-1-.8-1.5-1.5-1.5V8"/><path d="M12 8v6"/></svg>',
     bird: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7.5a1 1 0 1 0-2 0"/><path d="M13.5 7c-3 0-5.5 2-5.5 5 0 0-2-.5-3 1 1.5 0 2 .5 2 .5s-1 2 .5 3.5c.3-1.3 1-2 1-2 1.5 1.5 4 1.5 5.5.5 3-2 3.5-5 3.5-7l2-2-3 .3Z"/></svg>',
     fish: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 12c-2.5-3-6-3.5-9-2.5C5.5 10.3 4 12 4 12s1.5 1.7 4 2.5c3 1 6.5.5 9-2.5Z"/><path d="M17 12c1.5-1 3-1 3-1s-.5 1 0 2-3 0-3-1Z"/><path d="M9 11v2"/></svg>',
@@ -376,11 +395,13 @@
 
   // ---- data ----
   var activities = [
-    { id:'isoleren', icon:I.insulate, label:'Isoleren', sub:'Spouwmuur, dak of vloer na-isoleren' },
-    { id:'verbouwen', icon:I.build, label:'(Ver)bouwen of slopen', sub:'Aanbouw, dakrenovatie, gevel of sloop' },
+    { id:'isoleren', icon:I.insulate, label:'Isoleren', sub:'Spouwmuur, dak, vloer of kruipruimte na-isoleren' },
+    { id:'verbouwen', icon:I.build, label:'(Ver)bouwen, slopen of nieuwbouw', sub:'Aanbouw, dakkapel, dakrenovatie, gevel, sloop of een kavel bouwrijp maken' },
+    { id:'asbest', icon:I.asbest, label:'Asbest verwijderen', sub:'Asbestdak of asbesthoudende gevelplaten saneren' },
     { id:'zon', icon:I.solar, label:'Zonnepanelen', sub:'Panelen op het dak plaatsen' },
     { id:'bomen', icon:I.tree, label:'Bomen kappen of snoeien', sub:'Boom weghalen of flink terugsnoeien' },
     { id:'groen', icon:I.hedge, label:'Groen weghalen', sub:'Heg, struiken of beplanting verwijderen' },
+    { id:'grondwerk', icon:I.spade, label:'Graven in de tuin', sub:'Vijver of zwembad aanleggen, ophogen of verharden' },
     { id:'water', icon:I.water, label:'Sloot of oever aanpassen', sub:'Dempen, uitbaggeren of beschoeien' },
     { id:'anders', icon:I.other, label:'Iets anders of weet ik nog niet', sub:'' }
   ];
@@ -414,13 +435,26 @@
     ]
   };
 
-  var state = { activity:null, ctx:null, postcode:'', huisnr:'' };
+  var state = { activity:null, ctx:null, postcode:'', huisnr:'', gemeente:'', provincie:'' };
+
+  // Zoekt gemeente + provincie op via de open PDOK Locatieserver. Faalt stil: de check werkt ook zonder.
+  function lookupGemeente(postcode, huisnr){
+    if (!postcode) return;
+    var q = encodeURIComponent((postcode + ' ' + (huisnr || '')).trim());
+    fetch('https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?fq=type:adres&rows=1&q=' + q)
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var doc = d && d.response && d.response.docs && d.response.docs[0];
+        if (doc) { state.gemeente = doc.gemeentenaam || ''; state.provincie = doc.provincienaam || ''; }
+      })
+      .catch(function(){ /* stil falen */ });
+  }
 
   function labelFor(list, id){ for (var i=0;i<list.length;i++){ if(list[i].id===id) return list[i].label; } return id||''; }
   function ctxLabelFor(){
     var a = state.activity;
     if (!state.ctx) return '';
-    if (a==='isoleren'||a==='verbouwen'||a==='zon') return labelFor(ageQ.options, state.ctx);
+    if (a==='isoleren'||a==='verbouwen'||a==='zon'||a==='asbest') return labelFor(ageQ.options, state.ctx);
     if (a==='bomen') return labelFor(treeQ.options, state.ctx);
     if (a==='groen') return labelFor(groenQ.options, state.ctx);
     return '';
@@ -438,9 +472,10 @@
     var nest = chip(I.nest,'Jaarrond beschermde nesten');
     var broedvogels = chip(I.bird,'Broedvogels');
     var vis = chip(I.fish,'Vissen en amfibieën');
+    var amfib = chip(I.fish,'Amfibieën (o.a. rugstreeppad)');
     var broedTiming = '<b>Let op het broedseizoen.</b> Globaal van 15 maart tot 15 juli. Werk bij voorkeur daarbuiten, of laat vooraf controleren op nesten.';
 
-    if (a === 'isoleren' || a === 'verbouwen' || a === 'zon') {
+    if (a === 'isoleren' || a === 'verbouwen' || a === 'zon' || a === 'asbest') {
       out.level = 'advise';
       if (a === 'zon') {
         out.title = 'Een quickscan is aan te raden';
@@ -450,9 +485,14 @@
         out.title = 'Voor na-isolatie is een quickscan vrijwel altijd nodig';
         out.body = 'Bij na-isolatie worden spouw, dak of gevel afgesloten. Juist daar wonen vaak <strong>vleermuizen</strong>, <strong>huismussen</strong> en <strong>gierzwaluwen</strong>. Dit is op dit moment ook een juridisch gevoelig onderwerp, dus een quickscan is het verstandige beginpunt.';
         out.chips = vleermuis + huismus + gierzwaluw;
+      } else if (a === 'asbest') {
+        out.title = 'Een quickscan is aan te raden';
+        out.body = 'Bij het saneren van een asbestdak of asbesthoudende gevelplaten gaat het dak of de gevel helemaal open. Juist daar zitten vaak <strong>gebouwbewonende vleermuissoorten</strong>, <strong>huismussen</strong> en <strong>gierzwaluwen</strong>. Een quickscan brengt dat vooraf in beeld, zodat de sanering onderweg niet stil komt te liggen.';
+        out.chips = vleermuis + huismus + gierzwaluw;
+        out.permit = 'Voor asbestsanering gelden daarnaast eigen regels en een meldingsplicht bij je gemeente, los van de ecologie. In sommige provincies bestaat bovendien een aparte regeling voor asbestsanering in combinatie met beschermde soorten. Laat dat bij je aanvraag meenemen.';
       } else {
         out.title = 'Een quickscan is aan te raden';
-        out.body = 'Bij verbouwen of slopen kunnen verblijfplaatsen van <strong>vleermuizen</strong>, <strong>huismussen</strong> of <strong>gierzwaluwen</strong> verloren gaan. Een quickscan brengt in kaart of dat speelt.';
+        out.body = 'Bij verbouwen, slopen of nieuwbouw kunnen verblijfplaatsen van <strong>vleermuizen</strong>, <strong>huismussen</strong> of <strong>gierzwaluwen</strong> verloren gaan. Een quickscan brengt in kaart of dat speelt.';
         out.chips = vleermuis + huismus + gierzwaluw;
         out.permit = 'Denk ook aan een eventuele <b>omgevingsvergunning</b> voor de verbouwing zelf, bijvoorbeeld voor een dakkapel of aanbouw. Of dat nodig is, verschilt per gemeente. Vraag dit los na bij je gemeente of via het Omgevingsloket. Dit staat los van het ecologische advies hierboven.';
       }
@@ -460,7 +500,7 @@
         out.body += ' <strong>Ook bij nieuwere gebouwen</strong> is aanwezigheid niet uitgesloten. Een quickscan geeft uitsluitsel, en is vaak snel geregeld.';
       }
       if (a === 'isoleren') {
-        var locZin = state.postcode ? (' voor postcode <b>'+state.postcode.toUpperCase()+'</b>') : '';
+        var locZin = state.gemeente ? (' voor gemeente <b>'+state.gemeente+'</b>') : (state.postcode ? (' voor postcode <b>'+state.postcode.toUpperCase()+'</b>') : '');
         out.smp = '<b>Mogelijk sneller via je gemeente.</b> Sommige gemeenten hebben een soortenmanagementplan (SMP), waarmee je vaak kunt isoleren zonder een heel seizoen onderzoek, via de collectieve regeling. We checken graag'+locZin+' of jouw gemeente zo\'n regeling heeft. Vul hieronder je gegevens in, dan zoeken we het voor je uit.';
       }
       out.timing = vleermuisTiming('vleermuizen of gierzwaluwen');
@@ -506,6 +546,14 @@
         out.timing = broedTimingDyn();
         out.cta = { title:'Leg het even voor', sub:'Van Der Ham Ecologie kijkt vrijblijvend mee.' };
       }
+    }
+    else if (a === 'grondwerk') {
+      out.level = 'advise';
+      out.title = 'Een quickscan is aan te raden';
+      out.body = 'Graafwerk maakt open, kale grond. Dat trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich snel op zulke plekken vestigt. Ook kunnen er nesten of holen in het werkgebied liggen. Een quickscan wijst uit of dit speelt en hoe je het eenvoudig voorkomt.';
+      out.chips = amfib + broedvogels;
+      out.timing = broedTimingDyn();
+      out.cta = { title:'Quickscan aanvragen?', sub:'Van Der Ham Ecologie beoordeelt het werkgebied en adviseert over de aanpak.' };
     }
     else if (a === 'water') {
       out.level = 'advise';
@@ -578,6 +626,8 @@
     document.getElementById('loc-next').onclick = function(){
       state.postcode = (document.getElementById('loc-pc').value || '').trim();
       state.huisnr = (document.getElementById('loc-nr').value || '').trim();
+      state.gemeente = ''; state.provincie = '';
+      lookupGemeente(state.postcode, state.huisnr);
       renderActivity();
     };
     document.getElementById('back').onclick = renderIntro;
@@ -601,7 +651,7 @@
 
   function nextFromActivity(){
     var a = state.activity;
-    if (a==='isoleren'||a==='verbouwen'||a==='zon') renderContext(ageQ);
+    if (a==='isoleren'||a==='verbouwen'||a==='zon'||a==='asbest') renderContext(ageQ);
     else if (a==='bomen') renderContext(treeQ);
     else if (a==='groen') renderContext(groenQ);
     else renderResult(); // water, anders
@@ -667,7 +717,7 @@
     document.getElementById('back').onclick = function(){
       var a = state.activity;
       if (a==='water'||a==='anders') renderActivity();
-      else if (a==='isoleren'||a==='verbouwen'||a==='zon') renderContext(ageQ);
+      else if (a==='isoleren'||a==='verbouwen'||a==='zon'||a==='asbest') renderContext(ageQ);
       else if (a==='bomen') renderContext(treeQ);
       else if (a==='groen') renderContext(groenQ);
       else renderActivity();
@@ -685,7 +735,7 @@
       var opm = (document.getElementById('lf-opm').value || '').trim();
       var adres = (document.getElementById('lf-adres').value || adresPrefill || '').trim();
       var ctx = ctxLabelFor();
-      var recap = '<b>Jouw antwoorden</b><br>Plan: '+labelFor(activities, state.activity)+(ctx?'<br>Toelichting: '+ctx:'')+(adres?'<br>Locatie: '+adres:'')+'<br>Advies: '+r.title;
+      var recap = '<b>Jouw antwoorden</b><br>Plan: '+labelFor(activities, state.activity)+(ctx?'<br>Toelichting: '+ctx:'')+(adres?'<br>Locatie: '+adres+(state.gemeente?' ('+state.gemeente+')':''):'')+'<br>Advies: '+r.title;
       function finish(note){
         var msg = 'Bedankt'+(naam?', '+naam:'')+'! Je aanvraag staat bij Van Der Ham Ecologie. We nemen zo snel mogelijk contact met je op.';
         document.getElementById('lf-wrap').innerHTML =
@@ -708,6 +758,7 @@
           subject: 'HIEON-aanvraag: ' + labelFor(activities, state.activity),
           from_name: 'HIEON (hieon.nl)',
           email: email, naam: naam, telefoon: tel, adres: adres, opmerking: opm,
+          gemeente: state.gemeente || '-', provincie: state.provincie || '-',
           plan: labelFor(activities, state.activity), toelichting: ctx || '-', advies: r.title
         })
       }).then(function(res){ return res.json(); }).then(function(data){
