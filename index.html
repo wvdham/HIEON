@@ -333,6 +333,15 @@
   var VDH = "https://vanderhamecologie.nl";
   var WEB3FORMS_KEY = "c6e48889-f227-4692-9384-7782f3069a85"; // Web3Forms access key (publiek, client-side)
 
+  // Trechtermeting via GoatCounter (cookieloos). Faalt stil als de teller geblokkeerd is.
+  function track(naam){
+    try {
+      if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+        window.goatcounter.count({ path: naam, title: naam, event: true });
+      }
+    } catch (e) { /* stil falen */ }
+  }
+
   // ---- datumlogica: bepaalt in welk veldseizoen het onderzoek kan vallen ----
   var MND = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
   function fmtDate(d){ return d.getDate()+' '+MND[d.getMonth()]+' '+d.getFullYear(); }
@@ -596,7 +605,7 @@
         '</div>' +
         '<button class="btn-primary" id="start">Start de check '+I.arrowR+'</button>' +
       '</div>';
-    document.getElementById('start').onclick = function(){ state.activity=null; state.ctx=null; renderLocation(); };
+    document.getElementById('start').onclick = function(){ track('stap-1-check-gestart'); state.activity=null; state.ctx=null; renderLocation(); };
   }
 
   function optionsHTML(list){
@@ -644,7 +653,7 @@
         '<div class="nav"><button class="back" id="back">'+I.arrowL+' Terug</button></div>' +
       '</div>';
     body.querySelectorAll('.opt').forEach(function(el){
-      el.onclick = function(){ state.activity = el.getAttribute('data-id'); state.ctx=null; nextFromActivity(); };
+      el.onclick = function(){ track('stap-2-plan-gekozen'); state.activity = el.getAttribute('data-id'); state.ctx=null; nextFromActivity(); };
     });
     document.getElementById('back').onclick = renderLocation;
   }
@@ -675,6 +684,7 @@
 
   function renderResult(){
     setProgress(4);
+    track('stap-3-advies-getoond');
     var r = result();
     var adresPrefill = ((state.huisnr ? state.huisnr+' ' : '') + (state.postcode||'')).trim();
     var quickscanNote = (r.level === 'advise') ? '<p class="r-note">Dit is een eerste indruk op basis van je antwoorden. De quickscan vertelt je wat er op jóuw adres echt speelt en of je plan door kan.</p>' : '';
@@ -762,7 +772,7 @@
           plan: labelFor(activities, state.activity), toelichting: ctx || '-', advies: r.title
         })
       }).then(function(res){ return res.json(); }).then(function(data){
-        if (data && data.success) { finish(''); }
+        if (data && data.success) { track('stap-4-aanvraag-verstuurd'); finish(''); }
         else { lfSend.disabled = false; lfSend.innerHTML = oldTxt; err.hidden = false; err.textContent = 'Versturen lukte niet. Probeer het nog eens of mail info@vanderhamecologie.nl.'; }
       }).catch(function(){ lfSend.disabled = false; lfSend.innerHTML = oldTxt; err.hidden = false; err.textContent = 'Versturen lukte niet. Probeer het nog eens of mail info@vanderhamecologie.nl.'; });
     };
@@ -771,5 +781,6 @@
   renderIntro();
 })();
 </script>
+<script data-goatcounter="https://hieon.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
