@@ -511,6 +511,7 @@
       if (a === 'isoleren') {
         var locZin = state.gemeente ? (' voor gemeente <b>'+state.gemeente+'</b>') : (state.postcode ? (' voor postcode <b>'+state.postcode.toUpperCase()+'</b>') : '');
         out.smp = '<b>Mogelijk sneller via je gemeente.</b> Sommige gemeenten hebben een soortenmanagementplan (SMP), waarmee je vaak kunt isoleren zonder een heel seizoen onderzoek, via de collectieve regeling. We checken graag'+locZin+' of jouw gemeente zo\'n regeling heeft. Vul hieronder je gegevens in, dan zoeken we het voor je uit.';
+        out.body += ' Gaat het specifiek om de <strong>spouwmuur van een grondgebonden woning</strong>, dan is er sinds 2025 een snellere route via <a href="isolatie-en-vleermuizen.html"><strong>eDNA-onderzoek</strong></a>: weken in plaats van seizoenen. Die route geldt alleen voor vleermuizen in de spouw, dus niet voor het dak en niet voor huismussen en gierzwaluwen, en provincies gaan er verschillend mee om. We kijken voor je of het in jouw situatie kan.';
       }
       out.timing = vleermuisTiming('vleermuizen of gierzwaluwen');
       out.cta = { title:'Quickscan aanvragen?', sub:'Van Der Ham Ecologie voert de quickscan uit en regelt zo nodig het vervolgonderzoek.' };
