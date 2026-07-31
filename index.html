@@ -506,13 +506,38 @@
   ];
 
   var ageQ = {
-    kicker:'Over het gebouw', title:'Hoe oud is het gebouw ongeveer?',
-    help:'Oudere gebouwen hebben vaker kieren, spouwmuren en dakpannen waar dieren in wonen.',
+    kicker:'Over het gebouw', title:'Uit welke periode is het gebouw ongeveer?',
+    help:'De bouwperiode bepaalt of er een spouwmuur zit en of die al geïsoleerd is. Dat is precies de ruimte waar vleermuizen vaak zitten.',
     options:[
-      { id:'oud', label:'Voor 1970', sub:'' },
-      { id:'mid', label:'Tussen 1970 en 2000', sub:'' },
-      { id:'nieuw', label:'Na 2000', sub:'' },
+      { id:'voor1920', label:'Voor 1920', sub:'Meestal massieve muren' },
+      { id:'klassiek', label:'1920 tot 1975', sub:'Spouw, meestal nog niet geïsoleerd' },
+      { id:'overgang', label:'1975 tot 1992', sub:'Spouw, soms al geïsoleerd' },
+      { id:'modern', label:'Na 1992', sub:'Spouwisolatie is dan de norm' },
       { id:'onbekend', label:'Weet ik niet', sub:'' }
+    ]
+  };
+
+  // Wat de bouwperiode betekent. Wordt bij het resultaat getoond, zodat de
+  // vraag niet alleen gesteld wordt maar ook iets teruggeeft.
+  var BOUWJAAR_UITLEG = {
+    voor1920: 'Gebouwen van voor 1920 hebben meestal massieve muren en dus geen spouw. Dieren zitten er eerder onder de dakpannen, achter betimmering of in de kap.',
+    klassiek: 'In deze periode werd met spouwmuren gebouwd die meestal nog niet geïsoleerd zijn. Dat is de klassieke situatie waarin vleermuizen in de spouw zitten.',
+    overgang: 'Dit is een overgangsperiode: de spouw is soms al geïsoleerd en soms niet. Dat verschilt per pand en is van buitenaf niet te zien.',
+    modern: 'Vanaf de jaren negentig is spouwisolatie de norm. Dat maakt de kans kleiner, maar sluit niets uit: ook nieuwere gebouwen worden gebruikt.',
+    onbekend: 'Weet je de bouwperiode niet, dan is dat geen probleem: bij de quickscan kijken we ter plaatse wat voor constructie het is.'
+  };
+
+  // Bij verbouwen, slopen of nieuwbouw is niet de bouwperiode maar de omvang
+  // van de ingreep bepalend: buiten het gebouw spelen heel andere soorten.
+  var scopeQ = {
+    kicker:'Over je plan', title:'Wat verandert er, behalve aan het gebouw zelf?',
+    help:'Rondom een gebouw leven andere soorten dan erin. Hoe groter het gebied dat op de schop gaat, hoe meer er kan spelen.',
+    options:[
+      { id:'gebouw', label:'Alleen aan het gebouw', sub:'Dak, gevel, aanbouw of dakkapel' },
+      { id:'groen', label:'Ook groen of bomen eromheen', sub:'Struiken, heg of bomen weg' },
+      { id:'grond', label:'Ook grondwerk', sub:'Graven, ophogen of een kavel bouwrijp maken' },
+      { id:'water', label:'Ook een sloot, vijver of oever', sub:'' },
+      { id:'terrein', label:'Een heel terrein of meerdere gebouwen', sub:'Bijvoorbeeld een straat, wijk of park' }
     ]
   };
   var treeQ = {
@@ -553,7 +578,8 @@
   function ctxLabelFor(){
     var a = state.activity;
     if (!state.ctx) return '';
-    if (a==='isoleren'||a==='verbouwen'||a==='zon'||a==='asbest') return labelFor(ageQ.options, state.ctx);
+    if (a==='verbouwen') return labelFor(scopeQ.options, state.ctx);
+    if (a==='isoleren'||a==='zon'||a==='asbest') return labelFor(ageQ.options, state.ctx);
     if (a==='bomen') return labelFor(treeQ.options, state.ctx);
     if (a==='groen') return labelFor(groenQ.options, state.ctx);
     return '';
@@ -564,7 +590,7 @@
 
   function result() {
     var a = state.activity, c = state.ctx;
-    var out = { level:'advise', title:'', body:'', chips:'', tl:'', timing:'', smp:'', permit:'', cta:{title:'', sub:''} };
+    var out = { level:'advise', title:'', body:'', note:'', chips:'', tl:'', timing:'', smp:'', permit:'', cta:{title:'', sub:''} };
     var vleermuis = chip(I.bat,'Vleermuisonderzoek');
     var huismus = chip(I.bird,'Huismusonderzoek');
     var gierzwaluw = chip(I.swift,'Gierzwaluwonderzoek');
@@ -573,6 +599,20 @@
     var vis = chip(I.fish,'Vissen en amfibieën');
     var amfib = chip(I.fish,'Amfibieën (o.a. rugstreeppad)');
     var broedTiming = '<b>Let op het broedseizoen.</b> Globaal van 15 maart tot 15 juli. Werk bij voorkeur daarbuiten, of laat vooraf controleren op nesten.';
+
+    // Een heel terrein valt buiten wat een zelfcheck kan overzien: dan komen
+    // gebiedsbescherming, stikstof en een veel bredere set soortgroepen in
+    // beeld. Eerlijker om dat te zeggen dan een half antwoord te geven.
+    if (a === 'verbouwen' && c === 'terrein') {
+      out.level = 'check';
+      out.title = 'Dit is groter dan deze check aankan';
+      out.body = 'Gaat het om een heel terrein, een straat of meerdere gebouwen tegelijk, dan speelt er meer dan wat deze vragenlijst kan overzien. Naast gebouwbewonende soorten komen dan ook het groen, de bodem en het water in beeld, en mogelijk <strong>gebiedsbescherming</strong>: ligging ten opzichte van Natura 2000, het natuurnetwerk en de stikstofdepositie. Welk onderzoek nodig is, hangt sterk af van de locatie en de plannen.';
+      out.chips = '';
+      out.tl = '';
+      out.timing = '';
+      out.cta = { title:'Leg je plan voor', sub:'Van Der Ham Ecologie kijkt vrijblijvend mee en zegt eerlijk welk onderzoek er bij dit plan hoort.' };
+      return out;
+    }
 
     if (a === 'isoleren' || a === 'verbouwen' || a === 'zon' || a === 'asbest') {
       out.level = 'advise';
@@ -594,9 +634,25 @@
         out.body = 'Bij verbouwen, slopen of nieuwbouw kunnen verblijfplaatsen van <strong>vleermuizen</strong>, <strong>huismussen</strong> of <strong>gierzwaluwen</strong> verloren gaan. Een quickscan brengt in kaart of dat speelt.';
         out.chips = vleermuis + huismus + gierzwaluw;
         out.permit = 'Denk ook aan een eventuele <b>omgevingsvergunning</b> voor de verbouwing zelf, bijvoorbeeld voor een dakkapel of aanbouw. Of dat nodig is, verschilt per gemeente. Vraag dit los na bij je gemeente of via het Omgevingsloket. Dit staat los van het ecologische advies hierboven.';
+
+        // Buiten het gebouw spelen andere soorten. Zonder deze aanvulling
+        // zou een kavel bouwrijp maken hetzelfde advies geven als een dakkapel.
+        if (c === 'groen') {
+          out.body += ' Je haalt ook <strong>groen of bomen</strong> weg. Daarmee kunnen nesten van broedvogels verdwijnen, en struweel bij een woning is vaak leefgebied van de huismus. Bomen kunnen bovendien holtes hebben waarin vleermuizen of vogels zitten.';
+          out.chips += broedvogels + nest;
+        } else if (c === 'grond') {
+          out.body += ' Er gaat ook <strong>grond op de schop</strong>. Open, kale grond trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich daar snel vestigt, en in het werkgebied kunnen nesten of holen liggen.';
+          out.chips += amfib + broedvogels;
+        } else if (c === 'water') {
+          out.body += ' Er verandert ook iets aan <strong>water of oever</strong>. Daar kunnen beschermde vissen en amfibieën zitten, en het werk is aan eigen seizoenen gebonden.';
+          out.chips += vis;
+        }
       }
-      if (c === 'nieuw') {
+      if (c === 'modern') {
         out.body += ' <strong>Ook bij nieuwere gebouwen</strong> is aanwezigheid niet uitgesloten. Een quickscan geeft uitsluitsel, en is vaak snel geregeld.';
+      }
+      if (BOUWJAAR_UITLEG[c] && a !== 'verbouwen') {
+        out.note = BOUWJAAR_UITLEG[c];
       }
       if (a === 'isoleren') {
         var locZin = state.gemeente ? (' voor gemeente <b>'+state.gemeente+'</b>') : (state.postcode ? (' voor postcode <b>'+state.postcode.toUpperCase()+'</b>') : '');
@@ -751,7 +807,8 @@
 
   function nextFromActivity(){
     var a = state.activity;
-    if (a==='isoleren'||a==='verbouwen'||a==='zon'||a==='asbest') renderContext(ageQ);
+    if (a==='verbouwen') renderContext(scopeQ);
+    else if (a==='isoleren'||a==='zon'||a==='asbest') renderContext(ageQ);
     else if (a==='bomen') renderContext(treeQ);
     else if (a==='groen') renderContext(groenQ);
     else renderResult(); // water, anders
@@ -785,6 +842,7 @@
     var chipsBlock = r.chips ? '<p class="subhead">Wat de quickscan kan uitwijzen</p><div class="chips">'+r.chips+'</div>' : '';
     var timingBlock = r.timing ? '<div class="callout">'+I.clock+'<p>'+r.timing+'</p></div>' : '';
     var tlBlock = r.tl || '';
+    var noteBlock = r.note ? '<div class="callout info">'+I.leaf+'<p>'+r.note+'</p></div>' : '';
     var smpBlock = r.smp ? '<div class="callout good">'+I.leaf+'<p>'+r.smp+'</p></div>' : '';
     var permitBlock = r.permit ? '<div class="callout info">'+I.build+'<p>'+r.permit+'</p></div>' : '';
 
@@ -795,6 +853,7 @@
         '<p class="r-body">'+r.body+'</p>' +
         quickscanNote +
         chipsBlock +
+        noteBlock +
         tlBlock +
         timingBlock +
         smpBlock +
@@ -820,7 +879,8 @@
     document.getElementById('back').onclick = function(){
       var a = state.activity;
       if (a==='water'||a==='anders') renderActivity();
-      else if (a==='isoleren'||a==='verbouwen'||a==='zon'||a==='asbest') renderContext(ageQ);
+      else if (a==='verbouwen') renderContext(scopeQ);
+      else if (a==='isoleren'||a==='zon'||a==='asbest') renderContext(ageQ);
       else if (a==='bomen') renderContext(treeQ);
       else if (a==='groen') renderContext(groenQ);
       else renderActivity();
