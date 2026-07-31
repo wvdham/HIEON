@@ -101,6 +101,7 @@
   /* Masthead */
   .masthead { width: 100%; max-width: var(--maxw); text-align: center; margin-bottom: 18px; }
   .wordmark {
+    background: none; border: 0; padding: 0; cursor: pointer;
     font-family: var(--font-sans);
     font-weight: 800;
     letter-spacing: .22em;
@@ -108,6 +109,7 @@
     color: var(--brand);
     display: inline-flex; align-items: center; gap: 9px;
   }
+  .wordmark:hover, .wordmark:focus-visible { color: var(--brand-strong); }
   .wordmark .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--advise); display:inline-block; }
   .tagline {
     font-family: var(--font-serif);
@@ -366,7 +368,7 @@
 
 <div class="wrap">
   <div class="masthead">
-    <div class="wordmark">HIEON <span class="dot"></span></div>
+    <button class="wordmark" id="huis" type="button" title="Terug naar het begin van de check">HIEON <span class="dot"></span></button>
     <h1 class="tagline">Heb ik ecologisch onderzoek nodig?</h1>
   </div>
 
@@ -627,6 +629,8 @@
     var vis = chip(I.fish,'Vissen en amfibieën');
     var amfib = chip(I.fish,'Amfibieën (o.a. rugstreeppad)');
     var oever = chip(I.leaf,'Oevervegetatie en soorten daarvan');
+    var zoogdier = chip(I.hedge,'Grondgebonden zoogdieren');
+    var planten = chip(I.leaf,'Beschermde planten');
     var broedTiming = '<b>Let op het broedseizoen.</b> Globaal van 15 maart tot 15 juli. Werk bij voorkeur daarbuiten, of laat vooraf controleren op nesten.';
 
     // Een heel terrein valt buiten wat een zelfcheck kan overzien: dan komen
@@ -676,12 +680,12 @@
       if (a === 'verbouwen' || a === 'slopen') {
         var extra = '';
         if (ctxHeeft('groen')) {
-          out.body += ' Je haalt ook <strong>groen of bomen</strong> weg. Daarmee kunnen nesten van broedvogels verdwijnen, en struweel bij een woning is vaak leefgebied van de huismus. Bomen kunnen bovendien holtes hebben waarin vleermuizen of vogels zitten.';
-          extra += broedvogels + nest;
+          out.body += ' Je haalt ook <strong>groen of bomen</strong> weg. Daarmee kunnen nesten van broedvogels verdwijnen, en struweel bij een woning is vaak leefgebied van de huismus. Bomen kunnen holtes hebben waarin vleermuizen of vogels zitten. Dichte hagen, struweel en ruige randen zijn bovendien leefgebied voor <strong>egel</strong> en <strong>kleine marterachtigen</strong>.';
+          extra += broedvogels + nest + zoogdier;
         }
         if (ctxHeeft('grond')) {
-          out.body += ' Er gaat ook <strong>grond op de schop</strong>. Open, kale grond trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich daar snel vestigt, en in het werkgebied kunnen nesten of holen liggen.';
-          extra += amfib + broedvogels;
+          out.body += ' Er gaat ook <strong>grond op de schop</strong>. Open, kale grond trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich daar snel vestigt. In de bodem en in ruige randen kunnen holen en burchten liggen van <strong>das</strong>, <strong>egel</strong> of <strong>kleine marterachtigen</strong>, en bij afgraven of ophogen verdwijnen ook <strong>beschermde planten</strong> met standplaats en al.';
+          extra += amfib + broedvogels + zoogdier + planten;
         }
         if (ctxHeeft('water')) {
           out.body += ' Er verandert ook iets aan <strong>water of oever</strong>. Onder water kunnen beschermde vissen als de <strong>grote modderkruiper</strong> zitten en amfibieën overwinteren in de oever. De oevervegetatie zelf telt ook mee: in basterdwederik langs het water leeft bijvoorbeeld de <strong>teunisbloempijlstaart</strong>. Water- en oeverwerk is bovendien aan eigen seizoenen gebonden.';
@@ -725,8 +729,8 @@
       if (c === 'struweel') {
         out.level = 'advise';
         out.title = 'Een quickscan is aan te raden';
-        out.body = 'Dichte, groenblijvende struiken bij een woning zijn vaak een <strong>gemeenschappelijk struweel</strong> voor huismussen: een vaste schuil- en slaapplaats (in de volksmond een tjilp- of kwebbelbosje). Zulke plekken horen bij de beschermde leefomgeving van de huismus, dus zomaar weghalen kan niet. Een quickscan wijst uit of dit speelt.';
-        out.chips = huismus;
+        out.body = 'Dichte, groenblijvende struiken bij een woning zijn vaak een <strong>gemeenschappelijk struweel</strong> voor huismussen: een vaste schuil- en slaapplaats (in de volksmond een tjilp- of kwebbelbosje). Zulke plekken horen bij de beschermde leefomgeving van de huismus, dus zomaar weghalen kan niet. Dichte hagen en struweel zijn daarnaast leefgebied voor <strong>egel</strong> en <strong>kleine marterachtigen</strong>. Een quickscan wijst uit of dit speelt.';
+        out.chips = huismus + zoogdier;
         out.timing = broedTimingDyn();
         out.cta = { title:'Quickscan aanvragen?', sub:'Van Der Ham Ecologie beoordeelt of de struiken een functie voor huismussen hebben.' };
       } else if (c === 'los') {
@@ -748,8 +752,8 @@
     else if (a === 'grondwerk') {
       out.level = 'advise';
       out.title = 'Een quickscan is aan te raden';
-      out.body = 'Graafwerk maakt open, kale grond. Dat trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich snel op zulke plekken vestigt. Ook kunnen er nesten of holen in het werkgebied liggen. Een quickscan wijst uit of dit speelt en hoe je het eenvoudig voorkomt.';
-      out.chips = amfib + broedvogels;
+      out.body = 'Graafwerk maakt open, kale grond. Dat trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich snel op zulke plekken vestigt. In de bodem en in ruige randen kunnen holen en burchten liggen van <strong>das</strong>, <strong>egel</strong> of <strong>kleine marterachtigen</strong>, en bij afgraven of ophogen verdwijnen ook <strong>beschermde planten</strong> met standplaats en al. Een quickscan wijst uit of dit speelt en hoe je het eenvoudig voorkomt.';
+      out.chips = amfib + broedvogels + zoogdier + planten;
       out.timing = broedTimingDyn();
       out.cta = { title:'Quickscan aanvragen?', sub:'Van Der Ham Ecologie beoordeelt het werkgebied en adviseert over de aanpak.' };
     }
@@ -1018,6 +1022,12 @@
       }).catch(function(){ lfSend.disabled = false; lfSend.innerHTML = oldTxt; err.hidden = false; err.textContent = 'Versturen lukte niet. Probeer het nog eens of mail info@vanderhamecologie.nl.'; });
     };
   }
+
+  document.getElementById('huis').onclick = function(){
+    state.activity = null; state.ctx = null;
+    renderIntro();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   renderIntro();
 })();
