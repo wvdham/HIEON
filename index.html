@@ -244,6 +244,63 @@
   .callout.info { background: var(--check-soft); border-color: color-mix(in srgb, var(--check) 26%, transparent); }
   .callout.info svg { color: var(--check); }
 
+  /* ---- tijdlijn: het meerjarige traject in één oogopslag ---- */
+  .tl { margin: 0 0 22px; }
+  .tl__head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 10px; margin: 0 0 12px; flex-wrap: wrap;
+  }
+  .tl__title { font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); margin: 0; }
+  .tl__meta { font-size: 12.5px; color: var(--ink-faint); margin: 0; }
+  .tl__steps { list-style: none; margin: 0; padding: 0; }
+  .tl__step { position: relative; padding: 0 0 18px 90px; }
+  .tl__step:last-child { padding-bottom: 0; }
+  /* de verbindingslijn loopt van bolletje tot bolletje, niet voorbij het laatste */
+  .tl__step::before {
+    content: ""; position: absolute; left: 73px; top: 20px; bottom: -2px;
+    width: 2px; background: var(--line-strong);
+  }
+  .tl__step:last-child::before { display: none; }
+  .tl__year {
+    position: absolute; left: 0; top: 0; width: 64px; text-align: right;
+    font-size: 13px; font-weight: 700; color: var(--ink); line-height: 20px;
+    white-space: nowrap;
+  }
+  .tl__dot {
+    position: absolute; left: 68px; top: 5px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--surface); border: 2px solid var(--brand);
+  }
+  .tl__step--now .tl__dot { background: var(--brand); }
+  .tl__step h4 { margin: 0 0 2px; font-size: 14.5px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+  .tl__step p { margin: 0; font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; }
+
+  /* de twee uitkomsten na het veldonderzoek */
+  .tl__fork { display: grid; gap: 8px; margin-top: 9px; }
+  .tl__branch { border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; background: var(--surface-2); }
+  .tl__branch h5 {
+    margin: 0 0 3px; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; gap: 6px; color: var(--ink);
+  }
+  .tl__branch p { font-size: 13px; }
+  .tl__branch svg { width: 15px; height: 15px; flex: 0 0 auto; }
+  .tl__branch--good { background: var(--brand-soft); border-color: color-mix(in srgb, var(--brand) 26%, transparent); }
+  .tl__branch--good svg { color: var(--brand); }
+  .tl__branch--wait { background: var(--advise-soft); border-color: color-mix(in srgb, var(--advise) 24%, transparent); }
+  .tl__branch--wait svg { color: var(--advise); }
+  .tl__foot { margin: 12px 0 0; font-size: 13px; color: var(--ink-soft); }
+
+  @media (max-width: 460px) {
+    .tl__step { padding-left: 30px; }
+    .tl__step::before { left: 13px; }
+    .tl__dot { left: 8px; }
+    .tl__year {
+      position: static; width: auto; text-align: left; display: block;
+      margin-bottom: 2px; font-size: 12px; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--brand-ink);
+    }
+  }
+
   .cta-box {
     background: linear-gradient(180deg, var(--brand-soft), color-mix(in srgb, var(--brand-soft) 40%, var(--surface)));
     border: 1px solid color-mix(in srgb, var(--brand) 22%, transparent);
@@ -351,16 +408,49 @@
     var startDeadline = new Date(y, 4, 1);
     return (today <= startDeadline) ? y : y + 1;
   }
-  function vleermuisTiming(soortenZin){
+  // Het traject als tijdlijn. De quickscan is stap één en staat in het jaar
+  // waarin je hem aanvraagt; het veldonderzoek valt in het eerstvolgende
+  // haalbare veldseizoen, dat na 1 mei het jaar erop wordt.
+  function vleermuisTijdlijn(soortenZin){
     var today = new Date();
-    var Y = vleermuisJaar(today);
-    var G = Y + 1;
+    var nu = today.getFullYear();
+    var Y = vleermuisJaar(today);   // veldseizoen
+    var G = Y + 1;                  // gewenningsseizoen
     soortenZin = soortenZin || 'vleermuizen';
-    return 'Ingevuld op '+fmtDate(today)+'. Reken op een meerjarig traject:'
-      + '<br>&bull; <b>'+Y+'</b>: veldonderzoek (loopt van het voorjaar tot in het najaar).'
-      + '<br>&bull; Wordt er niets beschermds aangetroffen, dan kun je daarna aan de slag (najaar '+Y+').'
-      + '<br>&bull; Worden er <b>'+soortenZin+'</b> aangetroffen, dan volgt een vergunning met mitigerende maatregelen en een <b>gewenningsseizoen ('+G+')</b>: de vervangende nestgelegenheid moet eerst een heel seizoen beschikbaar zijn. Pas ná dat seizoen kun je aan de slag, op z\'n vroegst eind '+G+'.'
-      + '<br>Start het traject dus ruim op tijd.';
+
+    function stap(jaar, kop, tekst, extra, nuKlasse){
+      return '<li class="tl__step'+(nuKlasse ? ' tl__step--now' : '')+'">'
+        + '<span class="tl__year">'+jaar+'</span><span class="tl__dot"></span>'
+        + '<h4>'+kop+'</h4><p>'+tekst+'</p>'
+        + (extra || '')
+        + '</li>';
+    }
+
+    var fork =
+      '<div class="tl__fork">'
+        + '<div class="tl__branch tl__branch--good">'
+          + '<h5>'+I.calm+'Niets aangetroffen</h5>'
+          + '<p>Je kunt aan de slag zodra het onderzoek is afgerond, dus vanaf het najaar van '+Y+'.</p>'
+        + '</div>'
+        + '<div class="tl__branch tl__branch--wait">'
+          + '<h5>'+I.advise+'Wel '+soortenZin+'</h5>'
+          + '<p>Dan volgt een vergunning met mitigerende maatregelen, en daarna een gewenningsseizoen. Zie de volgende stap.</p>'
+        + '</div>'
+      + '</div>';
+
+    return '<div class="tl">'
+      + '<div class="tl__head">'
+        + '<p class="tl__title">Zo loopt het traject</p>'
+        + '<p class="tl__meta">Ingevuld op '+fmtDate(today)+'</p>'
+      + '</div>'
+      + '<ol class="tl__steps">'
+        + stap(nu, 'Quickscan', 'Het startpunt. Die kan het hele jaar door en geeft binnen enkele weken uitsluitsel of er vervolgonderzoek nodig is.', '', true)
+        + stap(Y, 'Aanvullend onderzoek', 'Blijkt uit de quickscan dat het nodig is, dan volgt soortgericht veldonderzoek. Dat is gebonden aan vaste seizoenen en loopt van het voorjaar tot in het najaar.', fork)
+        + stap(G, 'Gewenningsseizoen', 'Zijn er '+soortenZin+' aangetroffen, dan moeten de vervangende verblijfplaatsen eerst een heel seizoen beschikbaar zijn voordat het werk mag beginnen.')
+        + stap('eind ' + G, 'Uitvoering', 'In dat geval kun je op z\'n vroegst eind '+G+' aan de slag.')
+      + '</ol>'
+      + '<p class="tl__foot">Dit is het ongunstigste scenario. Vaak gaat het sneller, maar begin op tijd: het veldseizoen wacht niet.</p>'
+      + '</div>';
   }
   function inBroedseizoen(today){
     var y = today.getFullYear();
@@ -474,7 +564,7 @@
 
   function result() {
     var a = state.activity, c = state.ctx;
-    var out = { level:'advise', title:'', body:'', chips:'', timing:'', smp:'', permit:'', cta:{title:'', sub:''} };
+    var out = { level:'advise', title:'', body:'', chips:'', tl:'', timing:'', smp:'', permit:'', cta:{title:'', sub:''} };
     var vleermuis = chip(I.bat,'Vleermuisonderzoek');
     var huismus = chip(I.bird,'Huismusonderzoek');
     var gierzwaluw = chip(I.swift,'Gierzwaluwonderzoek');
@@ -513,7 +603,7 @@
         out.smp = '<b>Mogelijk sneller via je gemeente.</b> Sommige gemeenten hebben een soortenmanagementplan (SMP), waarmee je vaak kunt isoleren zonder een heel seizoen onderzoek, via de collectieve regeling. We checken graag'+locZin+' of jouw gemeente zo\'n regeling heeft. Vul hieronder je gegevens in, dan zoeken we het voor je uit.';
         out.body += ' Gaat het specifiek om de <strong>spouwmuur van een grondgebonden woning</strong>, dan is er sinds 2025 een snellere route via <a href="isolatie-en-vleermuizen.html"><strong>eDNA-onderzoek</strong></a>: weken in plaats van seizoenen. Die route geldt alleen voor vleermuizen in de spouw, dus niet voor het dak en niet voor huismussen en gierzwaluwen, en provincies gaan er verschillend mee om. We kijken voor je of het in jouw situatie kan.';
       }
-      out.timing = vleermuisTiming('vleermuizen of gierzwaluwen');
+      out.tl = vleermuisTijdlijn('vleermuizen of gierzwaluwen');
       out.cta = { title:'Quickscan aanvragen?', sub:'Van Der Ham Ecologie voert de quickscan uit en regelt zo nodig het vervolgonderzoek.' };
     }
     else if (a === 'bomen') {
@@ -529,7 +619,7 @@
         out.title = 'Een quickscan is aan te raden';
         out.body = 'Oude bomen met holtes of spleten kunnen <strong>verblijfplaatsen van vleermuizen</strong> of <strong>jaarrond beschermde nesten</strong> bevatten. Een quickscan maakt duidelijk of kappen of snoeien zomaar kan.';
         out.chips = vleermuis + nest + broedvogels;
-        out.timing = vleermuisTiming('vleermuizen');
+        out.tl = vleermuisTijdlijn('vleermuizen');
         out.cta = { title:'Quickscan aanvragen?', sub:'Van Der Ham Ecologie beoordeelt de bomen en adviseert over de veilige werkwijze.' };
       }
     }
@@ -694,6 +784,7 @@
 
     var chipsBlock = r.chips ? '<p class="subhead">Wat de quickscan kan uitwijzen</p><div class="chips">'+r.chips+'</div>' : '';
     var timingBlock = r.timing ? '<div class="callout">'+I.clock+'<p>'+r.timing+'</p></div>' : '';
+    var tlBlock = r.tl || '';
     var smpBlock = r.smp ? '<div class="callout good">'+I.leaf+'<p>'+r.smp+'</p></div>' : '';
     var permitBlock = r.permit ? '<div class="callout info">'+I.build+'<p>'+r.permit+'</p></div>' : '';
 
@@ -704,6 +795,7 @@
         '<p class="r-body">'+r.body+'</p>' +
         quickscanNote +
         chipsBlock +
+        tlBlock +
         timingBlock +
         smpBlock +
         permitBlock +
