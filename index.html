@@ -152,6 +152,16 @@
 
   /* Options */
   .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt.sel { border-color: var(--brand); background: var(--brand-soft); }
+  .opt .tick {
+    width: 20px; height: 20px; border-radius: 6px; flex: 0 0 auto;
+    border: 1.5px solid var(--line-strong); display: flex; align-items: center; justify-content: center;
+    color: transparent; background: var(--surface);
+  }
+  .opt.sel .tick { border-color: var(--brand); background: var(--brand); color: #fff; }
+  .opt .tick svg { width: 13px; height: 13px; }
+  .multi-hint { font-size: 12.5px; color: var(--ink-faint); margin: -4px 0 12px; }
+
   .opt {
     display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
     background: var(--surface-2);
@@ -495,7 +505,8 @@
   // ---- data ----
   var activities = [
     { id:'isoleren', icon:I.insulate, label:'Isoleren', sub:'Spouwmuur, dak, vloer of kruipruimte na-isoleren' },
-    { id:'verbouwen', icon:I.build, label:'(Ver)bouwen, slopen of nieuwbouw', sub:'Aanbouw, dakkapel, dakrenovatie, gevel, sloop of een kavel bouwrijp maken' },
+    { id:'verbouwen', icon:I.build, label:'Verbouwen of aanbouwen', sub:'Dakkapel, aanbouw, dakrenovatie of gevelwerk' },
+    { id:'slopen', icon:I.build, label:'Slopen of nieuwbouw', sub:'Een gebouw weghalen of een kavel bouwrijp maken' },
     { id:'asbest', icon:I.asbest, label:'Asbest verwijderen', sub:'Asbestdak of asbesthoudende gevelplaten saneren' },
     { id:'zon', icon:I.solar, label:'Zonnepanelen', sub:'Panelen op het dak plaatsen' },
     { id:'bomen', icon:I.tree, label:'Bomen kappen of snoeien', sub:'Boom weghalen of flink terugsnoeien' },
@@ -533,7 +544,7 @@
     kicker:'Over je plan', title:'Wat verandert er, behalve aan het gebouw zelf?',
     help:'Rondom een gebouw leven andere soorten dan erin. Hoe groter het gebied dat op de schop gaat, hoe meer er kan spelen.',
     options:[
-      { id:'gebouw', label:'Alleen aan het gebouw', sub:'Dak, gevel, aanbouw of dakkapel' },
+      { id:'gebouw', label:'Alleen aan het gebouw zelf', sub:'Er verandert niets in de tuin of op het terrein' },
       { id:'groen', label:'Ook groen of bomen eromheen', sub:'Struiken, heg of bomen weg' },
       { id:'grond', label:'Ook grondwerk', sub:'Graven, ophogen of een kavel bouwrijp maken' },
       { id:'water', label:'Ook een sloot, vijver of oever', sub:'' },
@@ -574,11 +585,19 @@
       .catch(function(){ /* stil falen */ });
   }
 
+  function ctxHeeft(id){
+    var c = state.ctx;
+    return Array.isArray(c) ? c.indexOf(id) !== -1 : c === id;
+  }
+
   function labelFor(list, id){ for (var i=0;i<list.length;i++){ if(list[i].id===id) return list[i].label; } return id||''; }
   function ctxLabelFor(){
     var a = state.activity;
     if (!state.ctx) return '';
-    if (a==='verbouwen') return labelFor(scopeQ.options, state.ctx);
+    if (a==='verbouwen'||a==='slopen') {
+      var ids = Array.isArray(state.ctx) ? state.ctx : [state.ctx];
+      return ids.map(function(id){ return labelFor(scopeQ.options, id); }).join(', ');
+    }
     if (a==='isoleren'||a==='zon'||a==='asbest') return labelFor(ageQ.options, state.ctx);
     if (a==='bomen') return labelFor(treeQ.options, state.ctx);
     if (a==='groen') return labelFor(groenQ.options, state.ctx);
@@ -587,6 +606,15 @@
 
   // ---- results ----
   function chip(icon, text){ return '<span class="chip">'+icon+text+'</span>'; }
+  // Meerdere keuzes kunnen dezelfde chip opleveren; toon hem dan één keer.
+  function ontdubbel(html){
+    var gezien = {}, uit = '';
+    (html.match(/<span class="chip">.*?<\/span>/g) || []).forEach(function(c){
+      var sleutel = c.replace(/<[^>]+>/g, '').trim();
+      if (!gezien[sleutel]) { gezien[sleutel] = 1; uit += c; }
+    });
+    return uit;
+  }
 
   function result() {
     var a = state.activity, c = state.ctx;
@@ -598,12 +626,13 @@
     var broedvogels = chip(I.bird,'Broedvogels');
     var vis = chip(I.fish,'Vissen en amfibieën');
     var amfib = chip(I.fish,'Amfibieën (o.a. rugstreeppad)');
+    var oever = chip(I.leaf,'Oevervegetatie en soorten daarvan');
     var broedTiming = '<b>Let op het broedseizoen.</b> Globaal van 15 maart tot 15 juli. Werk bij voorkeur daarbuiten, of laat vooraf controleren op nesten.';
 
     // Een heel terrein valt buiten wat een zelfcheck kan overzien: dan komen
     // gebiedsbescherming, stikstof en een veel bredere set soortgroepen in
     // beeld. Eerlijker om dat te zeggen dan een half antwoord te geven.
-    if (a === 'verbouwen' && c === 'terrein') {
+    if ((a === 'verbouwen' || a === 'slopen') && ctxHeeft('terrein')) {
       out.level = 'check';
       out.title = 'Dit is groter dan deze check aankan';
       out.body = 'Gaat het om een heel terrein, een straat of meerdere gebouwen tegelijk, dan speelt er meer dan wat deze vragenlijst kan overzien. Naast gebouwbewonende soorten komen dan ook het groen, de bodem en het water in beeld, en mogelijk <strong>gebiedsbescherming</strong>: ligging ten opzichte van Natura 2000, het natuurnetwerk en de stikstofdepositie. Welk onderzoek nodig is, hangt sterk af van de locatie en de plannen.';
@@ -614,7 +643,7 @@
       return out;
     }
 
-    if (a === 'isoleren' || a === 'verbouwen' || a === 'zon' || a === 'asbest') {
+    if (a === 'isoleren' || a === 'verbouwen' || a === 'slopen' || a === 'zon' || a === 'asbest') {
       out.level = 'advise';
       if (a === 'zon') {
         out.title = 'Een quickscan is aan te raden';
@@ -629,29 +658,42 @@
         out.body = 'Bij het saneren van een asbestdak of asbesthoudende gevelplaten gaat het dak of de gevel helemaal open. Juist daar zitten vaak <strong>gebouwbewonende vleermuissoorten</strong>, <strong>huismussen</strong> en <strong>gierzwaluwen</strong>. Een quickscan brengt dat vooraf in beeld, zodat de sanering onderweg niet stil komt te liggen.';
         out.chips = vleermuis + huismus + gierzwaluw;
         out.permit = 'Voor asbestsanering gelden daarnaast eigen regels en een meldingsplicht bij je gemeente, los van de ecologie. In sommige provincies bestaat bovendien een aparte regeling voor asbestsanering in combinatie met beschermde soorten. Laat dat bij je aanvraag meenemen.';
+      } else if (a === 'slopen') {
+        out.title = 'Bij sloop is een quickscan het startpunt';
+        out.body = 'Gaat het gebouw helemaal weg, dan verdwijnen ook alle plekken die dieren erin gebruiken. Zitten er <strong>vleermuizen</strong>, <strong>huismussen</strong> of <strong>gierzwaluwen</strong>, dan kun je daar niet omheen werken: er moeten vervangende verblijfplaatsen komen en die hebben een gewenningsseizoen nodig. Juist daarom is vroeg beginnen hier het verschil tussen maanden en jaren.';
+        out.chips = vleermuis + huismus + gierzwaluw;
+        out.permit = 'Voor de sloop zelf heb je vaak een <b>sloopmelding</b> of omgevingsvergunning nodig. Dat verschilt per gemeente en staat los van het ecologische advies hierboven. Vraag dit na bij je gemeente of via het Omgevingsloket.';
       } else {
         out.title = 'Een quickscan is aan te raden';
-        out.body = 'Bij verbouwen, slopen of nieuwbouw kunnen verblijfplaatsen van <strong>vleermuizen</strong>, <strong>huismussen</strong> of <strong>gierzwaluwen</strong> verloren gaan. Een quickscan brengt in kaart of dat speelt.';
+        out.body = 'Bij een dakkapel, aanbouw of werk aan dak en gevel kunnen verblijfplaatsen van <strong>vleermuizen</strong>, <strong>huismussen</strong> of <strong>gierzwaluwen</strong> verloren gaan. Omdat je maar een deel van het gebouw aanpakt, is er vaker ruimte voor een aangepaste werkwijze of planning. Een quickscan brengt in kaart of dat hier speelt.';
         out.chips = vleermuis + huismus + gierzwaluw;
         out.permit = 'Denk ook aan een eventuele <b>omgevingsvergunning</b> voor de verbouwing zelf, bijvoorbeeld voor een dakkapel of aanbouw. Of dat nodig is, verschilt per gemeente. Vraag dit los na bij je gemeente of via het Omgevingsloket. Dit staat los van het ecologische advies hierboven.';
 
-        // Buiten het gebouw spelen andere soorten. Zonder deze aanvulling
-        // zou een kavel bouwrijp maken hetzelfde advies geven als een dakkapel.
-        if (c === 'groen') {
+      }
+      // Buiten het gebouw spelen andere soorten. Geldt voor verbouwen en voor
+      // slopen: zonder deze aanvulling zou een kavel bouwrijp maken hetzelfde
+      // advies geven als een dakkapel.
+      if (a === 'verbouwen' || a === 'slopen') {
+        var extra = '';
+        if (ctxHeeft('groen')) {
           out.body += ' Je haalt ook <strong>groen of bomen</strong> weg. Daarmee kunnen nesten van broedvogels verdwijnen, en struweel bij een woning is vaak leefgebied van de huismus. Bomen kunnen bovendien holtes hebben waarin vleermuizen of vogels zitten.';
-          out.chips += broedvogels + nest;
-        } else if (c === 'grond') {
-          out.body += ' Er gaat ook <strong>grond op de schop</strong>. Open, kale grond trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich daar snel vestigt, en in het werkgebied kunnen nesten of holen liggen.';
-          out.chips += amfib + broedvogels;
-        } else if (c === 'water') {
-          out.body += ' Er verandert ook iets aan <strong>water of oever</strong>. Daar kunnen beschermde vissen en amfibieën zitten, en het werk is aan eigen seizoenen gebonden.';
-          out.chips += vis;
+          extra += broedvogels + nest;
         }
+        if (ctxHeeft('grond')) {
+          out.body += ' Er gaat ook <strong>grond op de schop</strong>. Open, kale grond trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich daar snel vestigt, en in het werkgebied kunnen nesten of holen liggen.';
+          extra += amfib + broedvogels;
+        }
+        if (ctxHeeft('water')) {
+          out.body += ' Er verandert ook iets aan <strong>water of oever</strong>. Onder water kunnen beschermde vissen als de <strong>grote modderkruiper</strong> zitten en amfibieën overwinteren in de oever. De oevervegetatie zelf telt ook mee: in basterdwederik langs het water leeft bijvoorbeeld de <strong>teunisbloempijlstaart</strong>. Water- en oeverwerk is bovendien aan eigen seizoenen gebonden.';
+          extra += vis + oever;
+        }
+        // dubbele chips voorkomen als groen en grondwerk allebei aanstaan
+        out.chips += ontdubbel(extra);
       }
       if (c === 'modern') {
         out.body += ' <strong>Ook bij nieuwere gebouwen</strong> is aanwezigheid niet uitgesloten. Een quickscan geeft uitsluitsel, en is vaak snel geregeld.';
       }
-      if (BOUWJAAR_UITLEG[c] && a !== 'verbouwen') {
+      if (BOUWJAAR_UITLEG[c] && a !== 'verbouwen' && a !== 'slopen') {
         out.note = BOUWJAAR_UITLEG[c];
       }
       if (a === 'isoleren') {
@@ -755,12 +797,12 @@
     document.getElementById('start').onclick = function(){ track('stap-1-check-gestart'); state.activity=null; state.ctx=null; renderLocation(); };
   }
 
-  function optionsHTML(list){
+  function optionsHTML(list, meerkeuze){
     return list.map(function(o){
-      return '<button class="opt" data-id="'+o.id+'">' +
-        (o.icon ? '<span class="ic">'+o.icon+'</span>' : '') +
+      return '<button class="opt" data-id="'+o.id+'" type="button">' +
+        (meerkeuze ? '<span class="tick">'+I.calm+'</span>' : (o.icon ? '<span class="ic">'+o.icon+'</span>' : '')) +
         '<span class="lab"><b>'+o.label+'</b>'+(o.sub?'<span>'+o.sub+'</span>':'')+'</span>' +
-        '<span class="chev">'+I.chev+'</span>' +
+        (meerkeuze ? '' : '<span class="chev">'+I.chev+'</span>') +
       '</button>';
     }).join('');
   }
@@ -807,11 +849,57 @@
 
   function nextFromActivity(){
     var a = state.activity;
-    if (a==='verbouwen') renderContext(scopeQ);
+    if (a==='verbouwen'||a==='slopen') renderMultiContext(scopeQ);
     else if (a==='isoleren'||a==='zon'||a==='asbest') renderContext(ageQ);
     else if (a==='bomen') renderContext(treeQ);
     else if (a==='groen') renderContext(groenQ);
     else renderResult(); // water, anders
+  }
+
+  // Meerkeuze: bij verbouwen of slopen kunnen meerdere dingen tegelijk
+  // veranderen. Een sloot dempen is bijna nooit de hoofdzaak, maar iets wat
+  // erbij komt, en dat moet je kunnen aanvinken zonder de rest te verliezen.
+  var SCOPE_EXCLUSIEF = ['gebouw', 'terrein'];
+
+  function renderMultiContext(q){
+    setProgress(3);
+    if (!Array.isArray(state.ctx)) state.ctx = [];
+    body.innerHTML =
+      '<div class="screen">' +
+        '<div class="stepmeta"><span class="kicker">'+q.kicker+'</span><span class="stepcount">Vraag 2</span></div>' +
+        '<h2 class="q-title">'+q.title+'</h2>' +
+        '<p class="q-help">'+q.help+'</p>' +
+        '<p class="multi-hint">Meerdere antwoorden mogelijk.</p>' +
+        '<div class="options">'+optionsHTML(q.options, true)+'</div>' +
+        '<button class="btn-primary" id="ctxnext" disabled>Verder '+I.arrowR+'</button>' +
+        '<div class="nav"><button class="back" id="back">'+I.arrowL+' Terug</button></div>' +
+      '</div>';
+
+    function teken(){
+      body.querySelectorAll('.opt').forEach(function(el){
+        el.classList.toggle('sel', state.ctx.indexOf(el.getAttribute('data-id')) !== -1);
+      });
+      document.getElementById('ctxnext').disabled = state.ctx.length === 0;
+    }
+
+    body.querySelectorAll('.opt').forEach(function(el){
+      el.onclick = function(){
+        var id = el.getAttribute('data-id');
+        var aan = state.ctx.indexOf(id) !== -1;
+        if (aan) {
+          state.ctx = state.ctx.filter(function(x){ return x !== id; });
+        } else if (SCOPE_EXCLUSIEF.indexOf(id) !== -1) {
+          state.ctx = [id];                       // sluit de rest uit
+        } else {
+          state.ctx = state.ctx.filter(function(x){ return SCOPE_EXCLUSIEF.indexOf(x) === -1; });
+          state.ctx.push(id);
+        }
+        teken();
+      };
+    });
+    teken();
+    document.getElementById('ctxnext').onclick = renderResult;
+    document.getElementById('back').onclick = renderActivity;
   }
 
   function renderContext(q){
@@ -879,7 +967,7 @@
     document.getElementById('back').onclick = function(){
       var a = state.activity;
       if (a==='water'||a==='anders') renderActivity();
-      else if (a==='verbouwen') renderContext(scopeQ);
+      else if (a==='verbouwen'||a==='slopen') renderMultiContext(scopeQ);
       else if (a==='isoleren'||a==='zon'||a==='asbest') renderContext(ageQ);
       else if (a==='bomen') renderContext(treeQ);
       else if (a==='groen') renderContext(groenQ);
