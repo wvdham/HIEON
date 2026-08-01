@@ -456,7 +456,7 @@
         + '<p class="tl__meta">Ingevuld op '+fmtDate(today)+'</p>'
       + '</div>'
       + '<ol class="tl__steps">'
-        + stap(nu, 'Quickscan', 'Het startpunt. Die kan het hele jaar door en geeft binnen enkele weken uitsluitsel of er vervolgonderzoek nodig is.', '', true)
+        + stap(nu, 'Quickscan', 'Het startpunt, en het enige dat je nu al kunt doen. Het veldbezoek kan het hele jaar door, dus je hoeft niet op een seizoen te wachten.', '', true)
         + stap(Y, 'Aanvullend onderzoek', 'Blijkt uit de quickscan dat het nodig is, dan volgt soortgericht veldonderzoek. Dat is gebonden aan vaste seizoenen en loopt van het voorjaar tot in het najaar.', fork)
         + stap(G, 'Gewenningsseizoen', 'Zijn er '+soortenZin+' aangetroffen, dan moeten de vervangende verblijfplaatsen eerst een heel seizoen beschikbaar zijn voordat het werk mag beginnen.')
         + stap('eind ' + G, 'Uitvoering', 'In dat geval kun je op z\'n vroegst eind '+G+' aan de slag.')
@@ -695,7 +695,7 @@
         out.chips += ontdubbel(extra);
       }
       if (c === 'modern') {
-        out.body += ' <strong>Ook bij nieuwere gebouwen</strong> is aanwezigheid niet uitgesloten. Een quickscan geeft uitsluitsel, en is vaak snel geregeld.';
+        out.body += ' <strong>Ook bij nieuwere gebouwen</strong> is aanwezigheid niet uitgesloten. Een quickscan geeft uitsluitsel.';
       }
       if (BOUWJAAR_UITLEG[c] && a !== 'verbouwen' && a !== 'slopen') {
         out.note = BOUWJAAR_UITLEG[c];
