@@ -938,17 +938,6 @@
     var timingBlock = r.timing ? '<div class="callout">'+I.clock+'<p>'+r.timing+'</p></div>' : '';
     var tlBlock = r.tl || '';
     var noteBlock = r.note ? '<div class="callout info">'+I.leaf+'<p>'+r.note+'</p></div>' : '';
-    // De zorgplicht geldt altijd, ook zonder onderzoeksplicht. Juist daar
-    // gaat het in de uitvoering mis: iets aantreffen en toch doorwerken.
-    var zorgBlock = (r.level === 'advise' || r.level === 'calm')
-      ? '<div class="callout">'+I.advise+'<p><b>Kom je tijdens het werk toch iets tegen?</b> '
-        + 'Dan geldt de zorgplicht, ook als uit deze check komt dat onderzoek niet nodig lijkt. '
-        + 'Denk aan een nest onder de dakpannen, een dier onder een plaat of in een takkenhoop, '
-        + 'of een holte in een boom die je pas ziet als hij ligt. '
-        + 'Leg het werk op die plek stil, laat het dier zelf weggaan in plaats van het te verplaatsen, '
-        + 'dek niets af en gooi niets dicht, en laat het beoordelen voordat je verdergaat. '
-        + 'Een nest met eieren of jongen mag je niet verstoren, ook niet als je het per ongeluk vond.</p></div>'
-      : '';
     var smpBlock = r.smp ? '<div class="callout good">'+I.leaf+'<p>'+r.smp+'</p></div>' : '';
     var permitBlock = r.permit ? '<div class="callout info">'+I.build+'<p>'+r.permit+'</p></div>' : '';
 
@@ -961,7 +950,6 @@
         chipsBlock +
         noteBlock +
         tlBlock +
-        zorgBlock +
         timingBlock +
         smpBlock +
         permitBlock +
