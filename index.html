@@ -633,6 +633,7 @@
     var oever = chip(I.leaf,'Oevervegetatie en soorten daarvan');
     var zoogdier = chip(I.hedge,'Grondgebonden zoogdieren');
     var planten = chip(I.leaf,'Beschermde planten');
+    var reptiel = chip(I.other,'Reptielen (o.a. hazelworm)');
     var broedTiming = '<b>Let op het broedseizoen.</b> Globaal van 15 maart tot 15 juli. Werk bij voorkeur daarbuiten, of laat vooraf controleren op nesten.';
 
     // Een heel terrein valt buiten wat een zelfcheck kan overzien: dan komen
@@ -682,12 +683,12 @@
       if (a === 'verbouwen' || a === 'slopen') {
         var extra = '';
         if (ctxHeeft('groen')) {
-          out.body += ' Je haalt ook <strong>groen of bomen</strong> weg. Daarmee kunnen nesten van broedvogels verdwijnen, en struweel bij een woning is vaak leefgebied van de huismus. Bomen kunnen holtes hebben waarin vleermuizen of vogels zitten. Dichte hagen, struweel en ruige randen zijn bovendien leefgebied voor <strong>egel</strong> en <strong>kleine marterachtigen</strong>.';
-          extra += broedvogels + nest + zoogdier;
+          out.body += ' Je haalt ook <strong>groen of bomen</strong> weg. Daarmee kunnen nesten van broedvogels verdwijnen, en struweel bij een woning is vaak leefgebied van de huismus. Bomen kunnen holtes hebben waarin vleermuizen of vogels zitten. Dichte hagen, struweel en ruige randen zijn bovendien leefgebied voor <strong>egel</strong> en <strong>kleine marterachtigen</strong>. Takkenhopen, composthopen en oude stapels stenen zijn schuilplaats voor <strong>reptielen en amfibieën</strong>; ruim die niet ongezien af.';
+          extra += broedvogels + nest + zoogdier + reptiel;
         }
         if (ctxHeeft('grond')) {
-          out.body += ' Er gaat ook <strong>grond op de schop</strong>. Open, kale grond trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich daar snel vestigt. In de bodem en in ruige randen kunnen holen en burchten liggen van <strong>das</strong>, <strong>egel</strong> of <strong>kleine marterachtigen</strong>, en bij afgraven of ophogen verdwijnen ook <strong>beschermde planten</strong> met standplaats en al.';
-          extra += amfib + broedvogels + zoogdier + planten;
+          out.body += ' Er gaat ook <strong>grond op de schop</strong>. Open, kale grond trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich daar snel vestigt. In de bodem en in ruige randen kunnen holen en burchten liggen van <strong>das</strong>, <strong>egel</strong> of <strong>kleine marterachtigen</strong>, en bij afgraven of ophogen verdwijnen ook <strong>beschermde planten</strong> met standplaats en al. Let daarnaast op wat er op de grond ligt: onder platen, puin, stapels materiaal en zeil kruipen <strong>reptielen</strong> als de hazelworm om op te warmen en te schuilen. Die vind je pas als je het optilt.';
+          extra += amfib + broedvogels + zoogdier + planten + reptiel;
         }
         if (ctxHeeft('water')) {
           out.body += ' Er verandert ook iets aan <strong>water of oever</strong>. Onder water kunnen beschermde vissen als de <strong>grote modderkruiper</strong> zitten en amfibieën overwinteren in de oever. De oevervegetatie zelf telt ook mee: in basterdwederik langs het water leeft bijvoorbeeld de <strong>teunisbloempijlstaart</strong>. Water- en oeverwerk is bovendien aan eigen seizoenen gebonden.';
@@ -731,8 +732,8 @@
       if (c === 'struweel') {
         out.level = 'advise';
         out.title = 'Een quickscan is aan te raden';
-        out.body = 'Dichte, groenblijvende struiken bij een woning zijn vaak een <strong>gemeenschappelijk struweel</strong> voor huismussen: een vaste schuil- en slaapplaats (in de volksmond een tjilp- of kwebbelbosje). Zulke plekken horen bij de beschermde leefomgeving van de huismus, dus zomaar weghalen kan niet. Dichte hagen en struweel zijn daarnaast leefgebied voor <strong>egel</strong> en <strong>kleine marterachtigen</strong>. Een quickscan wijst uit of dit speelt.';
-        out.chips = huismus + zoogdier;
+        out.body = 'Dichte, groenblijvende struiken bij een woning zijn vaak een <strong>gemeenschappelijk struweel</strong> voor huismussen: een vaste schuil- en slaapplaats (in de volksmond een tjilp- of kwebbelbosje). Zulke plekken horen bij de beschermde leefomgeving van de huismus, dus zomaar weghalen kan niet. Dichte hagen en struweel zijn daarnaast leefgebied voor <strong>egel</strong> en <strong>kleine marterachtigen</strong>. Takkenhopen, composthopen en oude stapels stenen zijn schuilplaats voor <strong>reptielen en amfibieën</strong>; ruim die niet ongezien af. Een quickscan wijst uit of dit speelt.';
+        out.chips = huismus + zoogdier + reptiel;
         out.timing = broedTimingDyn();
         out.cta = { title:'Quickscan aanvragen?', sub:'Van Der Ham Ecologie beoordeelt of de struiken een functie voor huismussen hebben.' };
       } else if (c === 'los') {
@@ -754,8 +755,8 @@
     else if (a === 'grondwerk') {
       out.level = 'advise';
       out.title = 'Een quickscan is aan te raden';
-      out.body = 'Graafwerk maakt open, kale grond. Dat trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich snel op zulke plekken vestigt. In de bodem en in ruige randen kunnen holen en burchten liggen van <strong>das</strong>, <strong>egel</strong> of <strong>kleine marterachtigen</strong>, en bij afgraven of ophogen verdwijnen ook <strong>beschermde planten</strong> met standplaats en al. Een quickscan wijst uit of dit speelt en hoe je het eenvoudig voorkomt.';
-      out.chips = amfib + broedvogels + zoogdier + planten;
+      out.body = 'Graafwerk maakt open, kale grond. Dat trekt de <strong>rugstreeppad</strong> aan, een beschermde soort die zich snel op zulke plekken vestigt. In de bodem en in ruige randen kunnen holen en burchten liggen van <strong>das</strong>, <strong>egel</strong> of <strong>kleine marterachtigen</strong>, en bij afgraven of ophogen verdwijnen ook <strong>beschermde planten</strong> met standplaats en al. Let daarnaast op wat er op de grond ligt: onder platen, puin, stapels materiaal en zeil kruipen <strong>reptielen</strong> als de hazelworm om op te warmen en te schuilen. Die vind je pas als je het optilt. Een quickscan wijst uit of dit speelt en hoe je het eenvoudig voorkomt.';
+      out.chips = amfib + broedvogels + zoogdier + planten + reptiel;
       out.timing = broedTimingDyn();
       out.cta = { title:'Quickscan aanvragen?', sub:'Van Der Ham Ecologie beoordeelt het werkgebied en adviseert over de aanpak.' };
     }
@@ -937,6 +938,17 @@
     var timingBlock = r.timing ? '<div class="callout">'+I.clock+'<p>'+r.timing+'</p></div>' : '';
     var tlBlock = r.tl || '';
     var noteBlock = r.note ? '<div class="callout info">'+I.leaf+'<p>'+r.note+'</p></div>' : '';
+    // De zorgplicht geldt altijd, ook zonder onderzoeksplicht. Juist daar
+    // gaat het in de uitvoering mis: iets aantreffen en toch doorwerken.
+    var zorgBlock = (r.level === 'advise' || r.level === 'calm')
+      ? '<div class="callout">'+I.advise+'<p><b>Kom je tijdens het werk toch iets tegen?</b> '
+        + 'Dan geldt de zorgplicht, ook als uit deze check komt dat onderzoek niet nodig lijkt. '
+        + 'Denk aan een nest onder de dakpannen, een dier onder een plaat of in een takkenhoop, '
+        + 'of een holte in een boom die je pas ziet als hij ligt. '
+        + 'Leg het werk op die plek stil, laat het dier zelf weggaan in plaats van het te verplaatsen, '
+        + 'dek niets af en gooi niets dicht, en laat het beoordelen voordat je verdergaat. '
+        + 'Een nest met eieren of jongen mag je niet verstoren, ook niet als je het per ongeluk vond.</p></div>'
+      : '';
     var smpBlock = r.smp ? '<div class="callout good">'+I.leaf+'<p>'+r.smp+'</p></div>' : '';
     var permitBlock = r.permit ? '<div class="callout info">'+I.build+'<p>'+r.permit+'</p></div>' : '';
 
@@ -949,6 +961,7 @@
         chipsBlock +
         noteBlock +
         tlBlock +
+        zorgBlock +
         timingBlock +
         smpBlock +
         permitBlock +
