@@ -517,6 +517,7 @@
     { id:'groen', icon:I.hedge, label:'Groen weghalen', sub:'Heg, struiken of beplanting verwijderen' },
     { id:'grondwerk', icon:I.spade, label:'Graven in de tuin', sub:'Vijver of zwembad aanleggen, ophogen of verharden' },
     { id:'water', icon:I.water, label:'Sloot of oever aanpassen', sub:'Dempen, uitbaggeren of beschoeien' },
+    { id:'evenement', icon:I.bolt, label:'Evenement op een terrein', sub:'Festival, dorpsfeest of ander evenement in de buitenlucht' },
     { id:'anders', icon:I.other, label:'Iets anders of weet ik nog niet', sub:'' }
   ];
 
@@ -635,6 +636,23 @@
     var planten = chip(I.leaf,'Beschermde planten');
     var reptiel = chip(I.other,'Reptielen (o.a. hazelworm)');
     var broedTiming = '<b>Let op het broedseizoen.</b> Globaal van 15 maart tot 15 juli. Werk bij voorkeur daarbuiten, of laat vooraf controleren op nesten.';
+
+    // Een evenement is geen bouwplan: het effect zit in de gebruiksfase
+    // (geluid, licht, publiek, verkeer) en werkt van buitenaf door op een
+    // aangrenzend natuurgebied. Welke kant het opgaat, hangt vrijwel volledig
+    // aan de ligging, dus een vragenlijst kan er geen zinnig oordeel over
+    // vellen. Zelfde bovengrens-redenering als bij een heel terrein hieronder.
+    if (a === 'evenement') {
+      out.level = 'check';
+      out.title = 'Bij een evenement hangt alles aan de locatie';
+      out.body = 'Bij een evenement in de buitenlucht zit het effect meestal niet in wat je bouwt, maar in wat er tijdens het evenement gebeurt: <strong>geluid</strong>, <strong>verlichting</strong>, publiek op het terrein, en het verkeer van de op- en afbouw. Geluid en licht dragen ver, dus het gaat niet alleen om het terrein zelf maar ook om wat eromheen ligt. Grenst het aan een natuurgebied, een uiterwaard, een bosrand of open weiland, dan komt naast de beschermde soorten op het terrein ook <strong>gebiedsbescherming</strong> in beeld: de ligging ten opzichte van Natura 2000 en het natuurnetwerk, en de stikstofdepositie van het bezoekersverkeer. Dat verschilt zo sterk per locatie dat een vragenlijst er geen betrouwbaar antwoord op geeft.';
+      out.chips = '';
+      out.tl = '';
+      out.timing = '';
+      out.permit = 'Goed om te weten: een <b>evenementenvergunning</b> van de gemeente staat los van de natuurwetgeving. Beide sporen lopen naast elkaar, met verschillende bevoegde gezagen, en de een zegt niets over de ander.';
+      out.cta = { title:'Leg je plan voor', sub:'Van Der Ham Ecologie kijkt vrijblijvend mee naar de locatie en de opzet, en zegt eerlijk wat er bij dit evenement nodig is.' };
+      return out;
+    }
 
     // Een heel terrein valt buiten wat een zelfcheck kan overzien: dan komen
     // gebiedsbescherming, stikstof en een veel bredere set soortgroepen in
@@ -860,7 +878,7 @@
     else if (a==='isoleren'||a==='zon'||a==='asbest') renderContext(ageQ);
     else if (a==='bomen') renderContext(treeQ);
     else if (a==='groen') renderContext(groenQ);
-    else renderResult(); // water, anders
+    else renderResult(); // water, evenement, anders
   }
 
   // Meerkeuze: bij verbouwen of slopen kunnen meerdere dingen tegelijk
@@ -973,7 +991,7 @@
 
     document.getElementById('back').onclick = function(){
       var a = state.activity;
-      if (a==='water'||a==='anders') renderActivity();
+      if (a==='water'||a==='evenement'||a==='anders') renderActivity();
       else if (a==='verbouwen'||a==='slopen') renderMultiContext(scopeQ);
       else if (a==='isoleren'||a==='zon'||a==='asbest') renderContext(ageQ);
       else if (a==='bomen') renderContext(treeQ);
